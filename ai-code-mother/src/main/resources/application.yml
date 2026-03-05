@@ -1,17 +1,24 @@
 spring:
   application:
     name: ai-code-mother
+    # mysql
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ai_code_mother
+    username: root
+    password: 123456
+
 server:
   port: 8123
   servlet:
     context-path: /api
-# Knife4j???
+# Knife4j-Config
 # springdoc-openapi
 springdoc:
   group-configs:
     - group: 'default'
       packages-to-scan: com.hty.aicodemother.controller
-# knife4j?????
+# knife4j-Config-Plus
 knife4j:
   enable: true
   setting:
