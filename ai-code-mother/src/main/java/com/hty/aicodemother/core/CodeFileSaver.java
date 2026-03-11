@@ -6,7 +6,6 @@ import cn.hutool.core.util.StrUtil;
 import com.hty.aicodemother.ai.model.HtmlCodeResult;
 import com.hty.aicodemother.ai.model.MultiFileCodeResult;
 import com.hty.aicodemother.model.enums.CodeGenTypeEnum;
-import dev.langchain4j.service.SystemMessage;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
