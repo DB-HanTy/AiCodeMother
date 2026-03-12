@@ -17,6 +17,9 @@ public class MultiFileCodeFileSaverTemplate extends CodeFileSaverTemplate<MultiF
         return CodeGenTypeEnum.MULTI_FILE;
     }
 
+    /**
+     * 保存多文件代码
+     */
     @Override
     protected void saveFiles(MultiFileCodeResult result, String baseDirPath) {
         // 保存 HTML 文件
@@ -27,6 +30,9 @@ public class MultiFileCodeFileSaverTemplate extends CodeFileSaverTemplate<MultiF
         writeToFile(baseDirPath, "script.js", result.getJsCode());
     }
 
+    /**
+     * 验证输入参数
+     */
     @Override
     protected void validateInput(MultiFileCodeResult result) {
         super.validateInput(result);

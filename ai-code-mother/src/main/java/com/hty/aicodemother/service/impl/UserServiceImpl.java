@@ -126,6 +126,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>  implements U
         return this.getLoginUserVO(user);
     }
 
+    /**
+     * 获取当前登录用户
+     * @param request
+     * @return
+     */
     @Override
     public User getLoginUser(HttpServletRequest request) {
         //先判断用户是否登录
