@@ -12,10 +12,7 @@ import com.hty.aicodemother.constant.UserConstant;
 import com.hty.aicodemother.exception.BusinessException;
 import com.hty.aicodemother.exception.ErrorCode;
 import com.hty.aicodemother.exception.ThrowUtils;
-import com.hty.aicodemother.model.dto.app.AppAddRequest;
-import com.hty.aicodemother.model.dto.app.AppAdminUpdateRequest;
-import com.hty.aicodemother.model.dto.app.AppQueryRequest;
-import com.hty.aicodemother.model.dto.app.AppUpdateRequest;
+import com.hty.aicodemother.model.dto.app.*;
 import com.hty.aicodemother.model.entity.App;
 import com.hty.aicodemother.model.entity.User;
 import com.hty.aicodemother.model.enums.CodeGenTypeEnum;
@@ -51,6 +48,14 @@ public class AppController {
     @Resource
     private UserService userService;
 
+    /**
+     * 通过对话生成代码应用（流式）
+     *
+     * @param appId    应用ID
+     * @param message  用户消息
+     * @param request  请求
+     * @return 生成的代码
+     */
     @GetMapping(value = "/chat/gen/code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> chatToGenCode(@RequestParam Long appId,
                                                        @RequestParam String message,
@@ -80,8 +85,6 @@ public class AppController {
                                 .build()
                 ));
     }
-
-
 
     /**
      * 创建应用
@@ -329,6 +332,25 @@ public class AppController {
         ThrowUtils.throwIf(app == null, ErrorCode.NOT_FOUND_ERROR);
         // 获取封装类
         return ResultUtils.success(appService.getAppVO(app));
+    }
+
+    /**
+     * 应用部署
+     *
+     * @param appDeployRequest 部署请求
+     * @param request          请求
+     * @return 部署 URL
+     */
+    @PostMapping("/deploy")
+    public BaseResponse<String> deployApp(@RequestBody AppDeployRequest appDeployRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(appDeployRequest == null, ErrorCode.PARAMS_ERROR);
+        Long appId = appDeployRequest.getAppId();
+        ThrowUtils.throwIf(appId == null || appId <= 0, ErrorCode.PARAMS_ERROR, "应用 ID 不能为空");
+        // 获取当前登录用户
+        User loginUser = userService.getLoginUser(request);
+        // 调用服务部署应用
+        String deployUrl = appService.deployApp(appId, loginUser);
+        return ResultUtils.success(deployUrl);
     }
 
 
