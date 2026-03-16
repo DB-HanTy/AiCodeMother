@@ -1,6 +1,7 @@
 package com.hty.aicodemother.core;
 
 import com.hty.aicodemother.ai.AiCodeGeneratorService;
+import com.hty.aicodemother.ai.AiCodeGeneratorServiceFactory;
 import com.hty.aicodemother.ai.model.HtmlCodeResult;
 import com.hty.aicodemother.ai.model.MultiFileCodeResult;
 import com.hty.aicodemother.core.parser.CodeParserExecutor;
@@ -23,7 +24,7 @@ import java.io.File;
 public class AiCodeGeneratorFacade {
 
     @Resource
-    private AiCodeGeneratorService aiCodeGeneratorService;
+    private AiCodeGeneratorServiceFactory aiCodeGeneratorServiceFactory;
 
 
     /**
@@ -38,6 +39,8 @@ public class AiCodeGeneratorFacade {
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "生成类型为空");
         }
+        //根据appId 获取相应的AI服务实例
+        AiCodeGeneratorService aiCodeGeneratorService = aiCodeGeneratorServiceFactory.getAiCodeGeneratorService(appId);
         return switch (codeGenTypeEnum) {
             case HTML ->{
                 HtmlCodeResult result = aiCodeGeneratorService.generateHtmlCode(userMessage);
@@ -66,7 +69,10 @@ public class AiCodeGeneratorFacade {
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "生成类型为空");
         }
-        return switch (codeGenTypeEnum) {
+        //根据appId 获取相应的AI服务实例
+        AiCodeGeneratorService aiCodeGeneratorService = aiCodeGeneratorServiceFactory.getAiCodeGeneratorService(appId);
+        return switch
+                (codeGenTypeEnum) {
             case HTML -> {
                 Flux<String> codeStream = aiCodeGeneratorService.generateHtmlCodeStream(userMessage);
                 yield  processCodeStream(codeStream,CodeGenTypeEnum.HTML,appId);
