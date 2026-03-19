@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
- * 工具执行结果消息
+ * 工具执行结果（调用完成）消息
  */
 @Data
 @EqualsAndHashCode(callSuper = true)

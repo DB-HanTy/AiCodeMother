@@ -101,12 +101,12 @@ public class AiCodeGeneratorFacade {
 
     /**
      * 将 TokenStream 转换为 Flux<String>，并传递工具调用信息
-     *适配器模式
+     * 适配器模式
      * @param tokenStream TokenStream 对象
      * @return Flux<String> 流式响应
      */
     private Flux<String> processTokenStream(TokenStream tokenStream) {
-        return Flux.create(sink -> {
+        return Flux.create(sink -> {//sink：可以在流里面加入数据
             //监听tokenStream
             tokenStream.onPartialResponse((String partialResponse) -> {
                         //封装成 AiResponse 对象
