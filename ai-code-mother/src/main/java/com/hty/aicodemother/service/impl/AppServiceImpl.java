@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import com.hty.aicodemother.ai.AiCodeGenTypeRoutingService;
 import com.hty.aicodemother.constant.AppConstant;
 import com.hty.aicodemother.core.AiCodeGeneratorFacade;
 import com.hty.aicodemother.core.builder.VueProjectBuilder;
@@ -13,6 +14,7 @@ import com.hty.aicodemother.exception.BusinessException;
 import com.hty.aicodemother.exception.ErrorCode;
 import com.hty.aicodemother.exception.ThrowUtils;
 import com.hty.aicodemother.mapper.AppMapper;
+import com.hty.aicodemother.model.dto.app.AppAddRequest;
 import com.hty.aicodemother.model.dto.app.AppQueryRequest;
 import com.hty.aicodemother.model.entity.App;
 import com.hty.aicodemother.model.entity.User;
@@ -67,6 +69,9 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
     @Resource
     private ScreenshotService screenshotService;
 
+    @Resource
+    private AiCodeGenTypeRoutingService aiCodeGenTypeRoutingService;
+
     /**
      * 通过对话生成应用代码
      * @param appId 应用ID
@@ -99,6 +104,34 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
         //7、收集AI响应的内容，并且在完成后保存记录到对话历史
         return streamHandlerExecutor.doExecute(codeStream,chatHistoryService,appId,loginUser,codeGenTypeEnum);
     }
+
+    /**
+     * 创建应用
+     * @param appAddRequest
+     * @param loginUser
+     * @return
+     */
+    @Override
+    public Long createApp(AppAddRequest appAddRequest, User loginUser) {
+        // 参数校验
+        String initPrompt = appAddRequest.getInitPrompt();
+        ThrowUtils.throwIf(StrUtil.isBlank(initPrompt), ErrorCode.PARAMS_ERROR, "初始化 prompt 不能为空");
+        // 构造入库对象
+        App app = new App();
+        BeanUtil.copyProperties(appAddRequest, app);
+        app.setUserId(loginUser.getId());
+        // 应用名称暂时为 initPrompt 前 12 位
+        app.setAppName(initPrompt.substring(0, Math.min(initPrompt.length(), 12)));
+        // 使用 AI 智能选择代码生成类型
+        CodeGenTypeEnum selectedCodeGenType = aiCodeGenTypeRoutingService.routeCodeGenType(initPrompt);
+        app.setCodeGenType(selectedCodeGenType.getValue());
+        // 插入数据库
+        boolean result = this.save(app);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        log.info("应用创建成功，ID: {}, 类型: {}", app.getId(), selectedCodeGenType.getValue());
+        return app.getId();
+    }
+
 
     /**
      * 应用部署
