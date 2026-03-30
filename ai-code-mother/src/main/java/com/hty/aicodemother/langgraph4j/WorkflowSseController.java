@@ -1,4 +1,4 @@
-package com.hty.aicodemother.controller;
+package com.hty.aicodemother.langgraph4j;
 
 import com.hty.aicodemother.langgraph4j.CodeGenWorkflow;
 import com.hty.aicodemother.langgraph4j.state.WorkflowContext;
