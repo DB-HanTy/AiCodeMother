@@ -16,6 +16,8 @@ import com.hty.aicodemother.model.dto.app.*;
 import com.hty.aicodemother.model.entity.App;
 import com.hty.aicodemother.model.entity.User;
 import com.hty.aicodemother.model.vo.AppVO;
+import com.hty.aicodemother.ratelimter.annotation.RateLimit;
+import com.hty.aicodemother.ratelimter.enums.RateLimitType;
 import com.hty.aicodemother.service.AppService;
 import com.hty.aicodemother.service.ProjectDownloadService;
 import com.hty.aicodemother.service.UserService;
@@ -37,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 应用 控制层。
+ * 应用 控制层
  *
  * @author <a href="https://github.com/DB-platypuS">程序员普莱塔普斯</a>
  */
@@ -64,6 +66,7 @@ public class AppController {
      * @return 生成的代码
      */
     @GetMapping(value = "/chat/gen/code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @RateLimit(limitType = RateLimitType.USER, rate = 5, rateInterval = 60, message = "AI对话请求过于频繁，请稍后再试")
     public Flux<ServerSentEvent<String>> chatToGenCode(@RequestParam Long appId,
                                                        @RequestParam String message,
                                                        HttpServletRequest request) {
