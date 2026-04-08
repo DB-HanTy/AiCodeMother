@@ -1,3 +1,4 @@
+create database ai_code_mother;
 -- 用户表
 create table if not exists user
 (

@@ -3,8 +3,7 @@ package com.hty.aicodemother.ai;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.hty.aicodemother.ai.guardrail.PromptSafetyInputGuardrail;
-import com.hty.aicodemother.ai.guardrail.RetryOutputGuardrail;
-import com.hty.aicodemother.ai.tools.*;
+import com.hty.aicodemother.ai.tools.ToolManager;
 import com.hty.aicodemother.exception.BusinessException;
 import com.hty.aicodemother.exception.ErrorCode;
 import com.hty.aicodemother.model.enums.CodeGenTypeEnum;
@@ -104,7 +103,7 @@ public class AiCodeGeneratorServiceFactory {
                         ))
                         .maxSequentialToolsInvocations(20) // 最多连续调用20次工具
                         .inputGuardrails(new PromptSafetyInputGuardrail()) // 添加输入护轨
-                        .outputGuardrails(new RetryOutputGuardrail())// 添加输出护轨
+//                        .outputGuardrails(new RetryOutputGuardrail())// 添加输出护轨，添加后会阻塞流式输出
                         .build();
             }
             case HTML, MULTI_FILE -> {
@@ -115,7 +114,7 @@ public class AiCodeGeneratorServiceFactory {
                         .streamingChatModel(openAiStreamingChatModel)
                         .chatMemory(chatMemory)
                         .inputGuardrails(new PromptSafetyInputGuardrail()) // 添加输入护轨
-                        .outputGuardrails(new RetryOutputGuardrail())// 添加输出护轨
+//                        .outputGuardrails(new RetryOutputGuardrail())// 添加输出护轨
                         .build();
             }
             default -> throw new BusinessException(ErrorCode.SYSTEM_ERROR,
