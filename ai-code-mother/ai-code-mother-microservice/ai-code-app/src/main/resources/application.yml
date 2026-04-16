@@ -23,7 +23,7 @@ spring:
   profiles:
     active: local
 server:
-  port: 8124
+  port: 8125
   servlet:
     context-path: /api
     # cookie 30 天过期

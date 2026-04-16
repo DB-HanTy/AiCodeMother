@@ -5,16 +5,21 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
-import com.hty.aicodemother.ai.AiCodeGenTypeRoutingService;
 import com.hty.aicodemother.ai.AiCodeGenTypeRoutingServiceFactory;
-import com.hty.aicodemother.constant.AppConstant;
 import com.hty.aicodemother.core.AiCodeGeneratorFacade;
 import com.hty.aicodemother.core.builder.VueProjectBuilder;
 import com.hty.aicodemother.core.handler.StreamHandlerExecutor;
+import com.hty.aicodemother.mapper.AppMapper;
+import com.hty.aicodemother.service.AppService;
+import com.hty.aicodemother.service.ChatHistoryService;
+import com.hty.aicodemother.ai.AiCodeGenTypeRoutingService;
+import com.hty.aicodemother.constant.AppConstant;
 import com.hty.aicodemother.exception.BusinessException;
 import com.hty.aicodemother.exception.ErrorCode;
 import com.hty.aicodemother.exception.ThrowUtils;
-import com.hty.aicodemother.mapper.AppMapper;
+
+import com.hty.aicodemother.innerservice.InnerScreenshotService;
+import com.hty.aicodemother.innerservice.InnerUserService;
 import com.hty.aicodemother.model.dto.app.AppAddRequest;
 import com.hty.aicodemother.model.dto.app.AppQueryRequest;
 import com.hty.aicodemother.model.entity.App;
@@ -23,17 +28,13 @@ import com.hty.aicodemother.model.enums.ChatHistoryMessageTypeEnum;
 import com.hty.aicodemother.model.enums.CodeGenTypeEnum;
 import com.hty.aicodemother.model.vo.AppVO;
 import com.hty.aicodemother.model.vo.UserVO;
-import com.hty.aicodemother.monitor.MonitorContext;
-import com.hty.aicodemother.monitor.MonitorContextHolder;
-import com.hty.aicodemother.service.AppService;
-import com.hty.aicodemother.service.ChatHistoryService;
-import com.hty.aicodemother.service.ScreenshotService;
-import com.hty.aicodemother.service.UserService;
+
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -53,13 +54,14 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
-public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppService{
+public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppService {
 
     @Value("${code.deploy-host:http://localhost}")
     private String deployHost;
 
     @Resource
-    private UserService userService;
+    @Lazy
+    private InnerUserService userService;
 
     @Resource
     private AiCodeGeneratorFacade aiCodeGeneratorFacade;
@@ -74,7 +76,8 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
     private VueProjectBuilder vueProjectBuilder;
 
     @Resource
-    private ScreenshotService screenshotService;
+    @Lazy
+    private InnerScreenshotService screenshotService;
 
     @Resource
     private AiCodeGenTypeRoutingServiceFactory aiCodeGenTypeRoutingServiceFactory;
@@ -106,21 +109,10 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
         }
         // 5. 通过校验后，添加用户消息到对话历史
         chatHistoryService.addChatMessage(appId, message, ChatHistoryMessageTypeEnum.USER.getValue(), loginUser.getId());
-        // 6. 设置监控上下文
-        MonitorContextHolder.setContext(
-                MonitorContext.builder()
-                        .userId(loginUser.getId().toString())
-                        .appId(appId.toString())
-                        .build()
-        );
-        // 7. 调用 AI 生成代码（流式）
+        // 6. 调用 AI 生成代码（流式）
         Flux<String> codeStream = aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
-        // 8. 收集 AI 响应内容并在完成后记录到对话历史
-        return streamHandlerExecutor.doExecute(codeStream, chatHistoryService, appId, loginUser, codeGenTypeEnum)
-                .doFinally(signalType -> {
-                    // 流结束时清理（无论成功/失败/取消）
-                    MonitorContextHolder.clearContext();
-                });
+        // 7. 收集 AI 响应内容并在完成后记录到对话历史
+        return streamHandlerExecutor.doExecute(codeStream, chatHistoryService, appId, loginUser, codeGenTypeEnum);
 
     }
 

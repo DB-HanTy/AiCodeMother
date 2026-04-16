@@ -2,9 +2,9 @@ package com.hty.aicodemother.ratelimter.aspect;
 
 import com.hty.aicodemother.exception.BusinessException;
 import com.hty.aicodemother.exception.ErrorCode;
+import com.hty.aicodemother.innerservice.InnerUserService;
 import com.hty.aicodemother.model.entity.User;
 import com.hty.aicodemother.ratelimter.annotation.RateLimit;
-import com.hty.aicodemother.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +16,7 @@ import org.redisson.api.RRateLimiter;
 import org.redisson.api.RateIntervalUnit;
 import org.redisson.api.RateType;
 import org.redisson.api.RedissonClient;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -33,7 +34,8 @@ public class RateLimitAspect {
     @Resource
     private RedissonClient redissonClient;
     @Resource
-    private UserService userService;
+    @Lazy
+    private InnerUserService userService;
 
     @Before("@annotation(rateLimit)")
     public void doBefore(JoinPoint point, RateLimit rateLimit){
@@ -77,7 +79,7 @@ public class RateLimitAspect {
                     ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
                     if (attributes != null) {
                         HttpServletRequest request = attributes.getRequest();
-                        User loginUser = userService.getLoginUser(request);
+                        User loginUser = InnerUserService.getLoginUser(request);
                         keyBuilder.append("user:").append(loginUser.getId());
                     } else {
                         // 无法获取请求上下文，使用IP限流
