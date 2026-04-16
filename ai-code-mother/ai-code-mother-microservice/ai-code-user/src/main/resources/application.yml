@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: ai-code-mother
+    # session 配置
+  session:
+    store-type: redis
+    # session 30 天过期
+    timeout: 2592000
+    # mysql
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ai_code_mother
+    username: root
+    password: 123456
+  #redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      ttl: 3600
+      database: 0
+  profiles:
+    active: local
+server:
+  port: 8124
+  servlet:
+    context-path: /api
+    # cookie 30 天过期
+    session:
+      cookie:
+        max-age: 2592000
+# Knife4j-Config
+# springdoc-openapi
+springdoc:
+  group-configs:
+    - group: 'default'
+      packages-to-scan: com.hty.aicodemother.controller
+# knife4j-Config-Plus
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
