@@ -1,10 +1,10 @@
 package com.hty.aicodeuser.aop;
 
-import com.hty.aicodeuser.annotation.AuthCheck;
-import com.hty.aicodeuser.exception.BusinessException;
-import com.hty.aicodeuser.exception.ErrorCode;
-import com.hty.aicodeuser.model.entity.User;
-import com.hty.aicodeuser.model.enums.UserRoleEnum;
+import com.hty.aicodemother.annotation.AuthCheck;
+import com.hty.aicodemother.exception.BusinessException;
+import com.hty.aicodemother.exception.ErrorCode;
+import com.hty.aicodemother.model.entity.User;
+import com.hty.aicodemother.model.enums.UserRoleEnum;
 import com.hty.aicodeuser.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;

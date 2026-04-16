@@ -3,16 +3,16 @@ package com.hty.aicodeuser.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.hty.aicodeuser.exception.BusinessException;
-import com.hty.aicodeuser.exception.ErrorCode;
-import com.hty.aicodeuser.model.dto.user.UserQueryRequest;
-import com.hty.aicodeuser.model.enums.UserRoleEnum;
-import com.hty.aicodeuser.model.vo.LoginUserVO;
-import com.hty.aicodeuser.model.vo.UserVO;
+import com.hty.aicodemother.exception.BusinessException;
+import com.hty.aicodemother.exception.ErrorCode;
+import com.hty.aicodemother.model.dto.user.UserQueryRequest;
+import com.hty.aicodemother.model.enums.UserRoleEnum;
+import com.hty.aicodemother.model.vo.LoginUserVO;
+import com.hty.aicodemother.model.vo.UserVO;
 import com.hty.aicodeuser.service.UserService;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
-import com.hty.aicodeuser.model.entity.User;
+import com.hty.aicodemother.model.entity.User;
 import com.hty.aicodeuser.mapper.UserMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.hty.aicodeuser.constant.UserConstant.USER_LOGIN_STATE;
+import static com.hty.aicodemother.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * 用户 服务层实现。

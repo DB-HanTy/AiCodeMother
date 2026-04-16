@@ -1,11 +1,11 @@
 package com.hty.aicodeuser.service;
 
-import com.hty.aicodeuser.model.dto.user.UserQueryRequest;
-import com.hty.aicodeuser.model.vo.LoginUserVO;
-import com.hty.aicodeuser.model.vo.UserVO;
+import com.hty.aicodemother.model.dto.user.UserQueryRequest;
+import com.hty.aicodemother.model.vo.LoginUserVO;
+import com.hty.aicodemother.model.vo.UserVO;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
-import com.hty.aicodeuser.model.entity.User;
+import com.hty.aicodemother.model.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
