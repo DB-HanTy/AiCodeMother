@@ -19,7 +19,6 @@ import java.time.format.DateTimeFormatter;
 @Service
 @Slf4j
 public class ScreenshotServiceImpl implements ScreenshotService {
-
     @Resource
     private CosManager cosManager;
 
